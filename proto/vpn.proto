@@ -1,0 +1,29 @@
+syntax="proto3";
+package vpn;
+
+option go_package="proto/gen";
+
+
+service UserService {
+    rpc Login(LoginRequest) returns (AuthenticationResponse);
+    rpc Register(RegisterRequest) returns (AuthenticationResponse);
+}
+
+message LoginRequest {
+    string email = 1;
+}
+
+message RegisterRequest {
+    string email = 1;
+    string password = 2;
+}
+
+
+message AuthenticationResponse {
+    string status = 1;
+    string token = 2;
+}
+
+
+
+
