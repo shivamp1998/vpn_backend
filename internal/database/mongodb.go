@@ -9,6 +9,9 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+var Client *mongo.Client
+var DB *mongo.Database
+
 func Connect(uri string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -26,6 +29,16 @@ func Connect(uri string) error {
 		return err
 	}
 
+	Client = client
+	DB = client.Database("vpn")
+
 	log.Println("Connected to MongoDB")
 	return nil
+}
+
+func Disconnect() error {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+
+	return Client.Disconnect(ctx)
 }

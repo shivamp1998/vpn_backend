@@ -23,6 +23,7 @@ func main() {
 
 	MONGODB_URI := os.Getenv("MONGODB_URI")
 	err = database.Connect(MONGODB_URI)
+	defer database.Disconnect()
 
 	if err != nil {
 		log.Fatal("Error in connection to database", err)
@@ -39,7 +40,8 @@ func main() {
 	}
 	grpcServer := grpc.NewServer()
 
-	pb.RegisterUserServiceServer(grpcServer, &server.Server{})
+	userServer := server.NewServer()
+	pb.RegisterUserServiceServer(grpcServer, userServer)
 	reflection.Register(grpcServer)
 
 	fmt.Print("Server connected on port", port)
