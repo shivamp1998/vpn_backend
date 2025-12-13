@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 
+	"github.com/shivamp1998/vpn_backend/internal/auth"
 	"github.com/shivamp1998/vpn_backend/internal/service"
 	pb "github.com/shivamp1998/vpn_backend/proto/gen"
 )
@@ -31,9 +32,18 @@ func (s *Server) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.Aut
 		}, err
 	}
 
+	token, err := auth.GenerateToken(user.Id, user.Email)
+
+	if err != nil {
+		return &pb.AuthenticationResponse{
+			Status: "error",
+			Token:  "",
+		}, err
+	}
+
 	return &pb.AuthenticationResponse{
 		Status: "success",
-		Token:  user.Id.Hex(),
+		Token:  token,
 	}, nil
 }
 
@@ -47,8 +57,17 @@ func (s *Server) Login(ctx context.Context, req *pb.LoginRequest) (*pb.Authentic
 		}, err
 	}
 
+	token, err := auth.GenerateToken(user.Id, user.Email)
+
+	if err != nil {
+		return &pb.AuthenticationResponse{
+			Status: "Error",
+			Token:  "",
+		}, err
+	}
+
 	return &pb.AuthenticationResponse{
 		Status: "Success",
-		Token:  user.Id.Hex(),
+		Token:  token,
 	}, nil
 }
