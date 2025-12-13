@@ -12,13 +12,6 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-type contextKey string
-
-const (
-	userIdKey    contextKey = "user_id"
-	userEmailKey contextKey = "user_email"
-)
-
 func AuthInterceptor(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
 	if isPublicEndpoint(info.FullMethod) {
 		return handler(ctx, req)
@@ -35,8 +28,8 @@ func AuthInterceptor(ctx context.Context, req any, info *grpc.UnaryServerInfo, h
 		return nil, status.Errorf(codes.Unauthenticated, "invalid token: %v", err)
 	}
 
-	ctx = context.WithValue(ctx, userIdKey, claims.UserId)
-	ctx = context.WithValue(ctx, userEmailKey, claims.Email)
+	ctx = context.WithValue(ctx, auth.UserIdKey, claims.UserId)
+	ctx = context.WithValue(ctx, auth.UserEmailKey, claims.Email)
 
 	return handler(ctx, req)
 

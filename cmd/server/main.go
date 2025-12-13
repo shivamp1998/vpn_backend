@@ -56,6 +56,7 @@ func main() {
 	mainServer := server.NewServer()
 	pb.RegisterUserServiceServer(grpcServer, mainServer)
 	pb.RegisterServerServiceServer(grpcServer, mainServer)
+	pb.RegisterConfigServiceServer(grpcServer, mainServer)
 	reflection.Register(grpcServer)
 
 	fmt.Print("Server connected on port", port)

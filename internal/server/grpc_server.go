@@ -8,20 +8,55 @@ import (
 	"github.com/shivamp1998/vpn_backend/internal/auth"
 	"github.com/shivamp1998/vpn_backend/internal/service"
 	pb "github.com/shivamp1998/vpn_backend/proto/gen"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type Server struct {
 	pb.UnimplementedUserServiceServer
 	pb.UnimplementedServerServiceServer
+	pb.UnimplementedConfigServiceServer
 	userService   *service.UserService
 	serverService *service.ServerService
+	configService *service.ConfigService
 }
 
 func NewServer() *Server {
 	return &Server{
 		userService:   service.NewUserService(),
 		serverService: service.NewServerService(),
+		configService: service.NewConfigService(),
 	}
+}
+
+func (s *Server) GenerateConfig(ctx context.Context, req *pb.GenerateConfigRequest) (*pb.GenerateConfigResponse, error) {
+	userId, err := auth.GetUserIDFromContext(ctx)
+	log.Print(userId)
+	if err != nil {
+		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
+	}
+
+	result, err := s.configService.GenerateConfig(ctx, userId, req.ServerId)
+
+	if err != nil {
+		return &pb.GenerateConfigResponse{
+			Message: "error",
+		}, err
+	}
+
+	return &pb.GenerateConfigResponse{
+		ConfigContent: result.ConfigContent,
+		QrCodeBase64:  result.QRCodeBase64,
+		ConfigData: &pb.ConfigData{
+			PrivateKey:      result.ConfigData.PrivateKey,
+			PublicKey:       result.ConfigData.PublicKey,
+			ServerPublicKey: result.ConfigData.ServerPublicKey,
+			ServerEndpoint:  result.ConfigData.ServerEndpoint,
+			ClientIp:        result.ConfigData.ClientIp,
+			Dns:             result.ConfigData.DNS,
+		},
+		Message: "success",
+	}, nil
 }
 
 func (s *Server) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.AuthenticationResponse, error) {

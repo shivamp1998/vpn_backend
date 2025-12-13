@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"context"
 	"errors"
 	"os"
 	"time"
@@ -19,6 +20,13 @@ func init() {
 	}
 	jwtSecret = []byte(secret)
 }
+
+type contextKey string
+
+const (
+	UserIdKey    contextKey = "user_id"
+	UserEmailKey contextKey = "user_email"
+)
 
 type Claims struct {
 	UserId primitive.ObjectID `json:"user_id"`
@@ -79,4 +87,20 @@ func GetUserIdFromToken(tokenString string) (primitive.ObjectID, error) {
 	}
 
 	return claims.UserId, nil
+}
+
+func GetUserIDFromContext(ctx context.Context) (primitive.ObjectID, error) {
+	userID, ok := ctx.Value(UserIdKey).(primitive.ObjectID)
+	if !ok {
+		return primitive.NilObjectID, errors.New("user ID not found in context")
+	}
+	return userID, nil
+}
+
+func GetUserEmailFromContext(ctx context.Context) (string, error) {
+	email, ok := ctx.Value(UserEmailKey).(string)
+	if !ok {
+		return "", errors.New("user email not found in context")
+	}
+	return email, nil
 }

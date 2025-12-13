@@ -70,3 +70,40 @@ message GetServerRequest {
 message GetServerResponse {
     Server server = 1;
 }
+
+service ConfigService {
+    rpc GenerateConfig(GenerateConfigRequest) returns (GenerateConfigResponse);
+    rpc GetConfig(GetConfigRequest) returns (GetConfigResponse);
+    rpc RotateKeys(GenerateConfigRequest) returns (GetConfigResponse);
+}
+
+message GenerateConfigRequest {
+    string server_id = 1;
+}
+
+message GenerateConfigResponse {
+    string config_content = 1;
+    string qr_code_base64 = 2;
+    ConfigData config_data = 3;
+    string message = 4;
+}
+
+message ConfigData {
+    string private_key = 1;
+    string public_key = 2;
+    string server_public_key = 3;
+    string server_endpoint = 4;
+    string client_ip = 5;
+    string dns = 6;
+}
+
+message GetConfigRequest {
+    string server_id = 1;
+    string user_id = 2;
+}
+
+message GetConfigResponse {
+    ConfigData config_data = 1;
+    string config_content = 2;
+    string qr_code_base64 = 3;
+}
