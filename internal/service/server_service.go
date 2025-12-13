@@ -7,6 +7,7 @@ import (
 
 	"github.com/shivamp1998/vpn_backend/internal/model"
 	"github.com/shivamp1998/vpn_backend/internal/repository"
+	"github.com/shivamp1998/vpn_backend/internal/wireguard"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -39,7 +40,15 @@ func (s *ServerService) CreateServer(ctx context.Context, name, endpoint, region
 		MaxClients:          maxClients,
 	}
 
-	err := s.serverRepo.Create(ctx, server)
+	privateKey, publicKey, err := wireguard.GenerateKeyPair()
+	if err != nil {
+		return nil, err
+	}
+
+	server.PublicKey = publicKey
+	server.PrivateKeyEncrypted = privateKey
+
+	err = s.serverRepo.Create(ctx, server)
 
 	if err != nil {
 		return nil, err
