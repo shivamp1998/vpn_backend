@@ -1,10 +1,12 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net"
 	"os"
+	"time"
 
 	"github.com/joho/godotenv"
 	"github.com/shivamp1998/vpn_backend/internal/database"
@@ -29,6 +31,15 @@ func main() {
 		log.Fatal("Error in connection to database", err)
 	}
 
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	err = database.InitializeIndexes(ctx)
+
+	if err != nil {
+		log.Printf("Warning: Failed to initialize indexes: %v", err)
+	}
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = ":50051"
@@ -38,7 +49,9 @@ func main() {
 	if err != nil {
 		log.Fatal("Error in listening to port", err)
 	}
-	grpcServer := grpc.NewServer()
+	grpcServer := grpc.NewServer(
+		grpc.UnaryInterceptor(server.AuthInterceptor),
+	)
 
 	userServer := server.NewServer()
 	pb.RegisterUserServiceServer(grpcServer, userServer)
