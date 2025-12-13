@@ -53,8 +53,9 @@ func main() {
 		grpc.UnaryInterceptor(server.AuthInterceptor),
 	)
 
-	userServer := server.NewServer()
-	pb.RegisterUserServiceServer(grpcServer, userServer)
+	mainServer := server.NewServer()
+	pb.RegisterUserServiceServer(grpcServer, mainServer)
+	pb.RegisterServerServiceServer(grpcServer, mainServer)
 	reflection.Register(grpcServer)
 
 	fmt.Print("Server connected on port", port)

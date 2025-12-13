@@ -157,3 +157,181 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "proto/vpn.proto",
 }
+
+const (
+	ServerService_CreateServer_FullMethodName = "/vpn.ServerService/CreateServer"
+	ServerService_ListServers_FullMethodName  = "/vpn.ServerService/ListServers"
+	ServerService_GetServer_FullMethodName    = "/vpn.ServerService/GetServer"
+)
+
+// ServerServiceClient is the client API for ServerService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type ServerServiceClient interface {
+	CreateServer(ctx context.Context, in *CreateServerRequest, opts ...grpc.CallOption) (*CreateServerResponse, error)
+	ListServers(ctx context.Context, in *ListServerRequest, opts ...grpc.CallOption) (*ListServerResponse, error)
+	GetServer(ctx context.Context, in *GetServerRequest, opts ...grpc.CallOption) (*GetServerResponse, error)
+}
+
+type serverServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewServerServiceClient(cc grpc.ClientConnInterface) ServerServiceClient {
+	return &serverServiceClient{cc}
+}
+
+func (c *serverServiceClient) CreateServer(ctx context.Context, in *CreateServerRequest, opts ...grpc.CallOption) (*CreateServerResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateServerResponse)
+	err := c.cc.Invoke(ctx, ServerService_CreateServer_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *serverServiceClient) ListServers(ctx context.Context, in *ListServerRequest, opts ...grpc.CallOption) (*ListServerResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListServerResponse)
+	err := c.cc.Invoke(ctx, ServerService_ListServers_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *serverServiceClient) GetServer(ctx context.Context, in *GetServerRequest, opts ...grpc.CallOption) (*GetServerResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetServerResponse)
+	err := c.cc.Invoke(ctx, ServerService_GetServer_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// ServerServiceServer is the server API for ServerService service.
+// All implementations must embed UnimplementedServerServiceServer
+// for forward compatibility.
+type ServerServiceServer interface {
+	CreateServer(context.Context, *CreateServerRequest) (*CreateServerResponse, error)
+	ListServers(context.Context, *ListServerRequest) (*ListServerResponse, error)
+	GetServer(context.Context, *GetServerRequest) (*GetServerResponse, error)
+	mustEmbedUnimplementedServerServiceServer()
+}
+
+// UnimplementedServerServiceServer must be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedServerServiceServer struct{}
+
+func (UnimplementedServerServiceServer) CreateServer(context.Context, *CreateServerRequest) (*CreateServerResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateServer not implemented")
+}
+func (UnimplementedServerServiceServer) ListServers(context.Context, *ListServerRequest) (*ListServerResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListServers not implemented")
+}
+func (UnimplementedServerServiceServer) GetServer(context.Context, *GetServerRequest) (*GetServerResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetServer not implemented")
+}
+func (UnimplementedServerServiceServer) mustEmbedUnimplementedServerServiceServer() {}
+func (UnimplementedServerServiceServer) testEmbeddedByValue()                       {}
+
+// UnsafeServerServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to ServerServiceServer will
+// result in compilation errors.
+type UnsafeServerServiceServer interface {
+	mustEmbedUnimplementedServerServiceServer()
+}
+
+func RegisterServerServiceServer(s grpc.ServiceRegistrar, srv ServerServiceServer) {
+	// If the following call panics, it indicates UnimplementedServerServiceServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&ServerService_ServiceDesc, srv)
+}
+
+func _ServerService_CreateServer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateServerRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ServerServiceServer).CreateServer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ServerService_CreateServer_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ServerServiceServer).CreateServer(ctx, req.(*CreateServerRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ServerService_ListServers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListServerRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ServerServiceServer).ListServers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ServerService_ListServers_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ServerServiceServer).ListServers(ctx, req.(*ListServerRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ServerService_GetServer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetServerRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ServerServiceServer).GetServer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ServerService_GetServer_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ServerServiceServer).GetServer(ctx, req.(*GetServerRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// ServerService_ServiceDesc is the grpc.ServiceDesc for ServerService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var ServerService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "vpn.ServerService",
+	HandlerType: (*ServerServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "CreateServer",
+			Handler:    _ServerService_CreateServer_Handler,
+		},
+		{
+			MethodName: "ListServers",
+			Handler:    _ServerService_ListServers_Handler,
+		},
+		{
+			MethodName: "GetServer",
+			Handler:    _ServerService_GetServer_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "proto/vpn.proto",
+}

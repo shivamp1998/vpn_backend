@@ -54,7 +54,7 @@ func (s *UserService) Login(ctx context.Context, email, password string) (*model
 	}
 
 	if !auth.CheckPasswordHash(user.PasswordHash, password) {
-		return nil, errors.New("Passwords do not match")
+		return nil, errors.New("passwords do not match")
 	}
 
 	return user, nil

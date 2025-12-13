@@ -26,5 +26,47 @@ message AuthenticationResponse {
 }
 
 
+service ServerService {
+    rpc CreateServer(CreateServerRequest) returns (CreateServerResponse);
+    rpc ListServers(ListServerRequest) returns (ListServerResponse);
+    rpc GetServer(GetServerRequest) returns (GetServerResponse);
+}
+
+message Server {
+    string id = 1;
+    string name = 2;
+    string endpoint = 3;
+    string public_key = 4;
+    string region = 5;
+    int32 max_clients = 6;
+    int32 current_clients = 7;
+}
 
 
+message CreateServerRequest {
+    string name = 1;
+    string endpoint = 2;
+    string region = 3;
+    int32 max_clients = 4;
+}
+
+message CreateServerResponse {
+    Server server = 1;
+    string message = 2;
+}
+
+message ListServerRequest {
+
+}
+
+message ListServerResponse {
+    repeated Server servers = 1;
+}
+
+message GetServerRequest {
+    string server_id = 1; 
+}
+
+message GetServerResponse {
+    Server server = 1;
+}
