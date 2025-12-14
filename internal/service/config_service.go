@@ -109,9 +109,27 @@ func (s *ConfigService) GenerateConfig(ctx context.Context, userId primitive.Obj
 }
 
 func (s *ConfigService) assignClientIp(ctx context.Context, serverId primitive.ObjectID) (string, error) {
-	baseIp := 2
+	existingKeys, err := s.keysRepo.GetAllByServer(ctx, serverId)
 
-	ip := fmt.Sprintf("10.0.0.%d/32", baseIp)
+	if err != nil {
+		return "", fmt.Errorf("failed to get existing keys: %v", err)
+	}
+	usedIps := make(map[int]bool)
 
-	return ip, nil
+	for _, key := range existingKeys {
+		if key.IpAddress != "" {
+			var lastOctet int
+			_, err := fmt.Sscanf(key.IpAddress, "10.0.0.%d/32", &lastOctet)
+			if err == nil {
+				usedIps[lastOctet] = true
+			}
+		}
+	}
+
+	for i := 2; i <= 254; i++ {
+		if !usedIps[i] {
+			return fmt.Sprintf("10.0.0.%d/32", i), nil
+		}
+	}
+	return "", errors.New("no available IP addressess")
 }

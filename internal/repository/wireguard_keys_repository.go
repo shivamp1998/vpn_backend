@@ -63,3 +63,20 @@ func (r *WireGuardKeysRepository) Delete(ctx context.Context, id primitive.Objec
 	_, err := r.collection.DeleteOne(ctx, filter)
 	return err
 }
+
+func (r *WireGuardKeysRepository) GetAllByServer(ctx context.Context, serverId primitive.ObjectID) ([]*model.WireGuardKeys, error) {
+	var keys []*model.WireGuardKeys
+
+	filter := bson.M{
+		"server_id": serverId,
+	}
+
+	cursor, err := r.collection.Find(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	err = cursor.All(ctx, &keys)
+	return keys, err
+}
