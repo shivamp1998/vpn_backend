@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"errors"
-	"os"
 
 	"github.com/shivamp1998/vpn_backend/internal/model"
 	"github.com/shivamp1998/vpn_backend/internal/repository"
@@ -21,7 +20,7 @@ func NewServerService() *ServerService {
 	}
 }
 
-func (s *ServerService) CreateServer(ctx context.Context, name, endpoint, region string, maxClients int32) (*model.Server, error) {
+func (s *ServerService) CreateServer(ctx context.Context, name, endpoint, region, publicKey string, maxClients int32) (*model.Server, error) {
 
 	if name == "" || endpoint == "" || region == "" {
 		return nil, errors.New("name, endpoint, region is required")
@@ -32,23 +31,25 @@ func (s *ServerService) CreateServer(ctx context.Context, name, endpoint, region
 	}
 
 	server := &model.Server{
-		Name:                name,
-		Endpoint:            endpoint,
-		PublicKey:           os.Getenv("PUBLIC_KEY"),
-		PrivateKeyEncrypted: os.Getenv("PRIVATE_KEY"),
-		Region:              region,
-		MaxClients:          maxClients,
+		Name:       name,
+		Endpoint:   endpoint,
+		Region:     region,
+		MaxClients: maxClients,
 	}
 
-	privateKey, publicKey, err := wireguard.GenerateKeyPair()
-	if err != nil {
-		return nil, err
+	if publicKey == "" {
+		server.PublicKey = publicKey
+		server.PrivateKeyEncrypted = ""
+	} else {
+		privateKey, publicKey, err := wireguard.GenerateKeyPair()
+		if err != nil {
+			return nil, err
+		}
+		server.PublicKey = publicKey
+		server.PrivateKeyEncrypted = privateKey
 	}
 
-	server.PublicKey = publicKey
-	server.PrivateKeyEncrypted = privateKey
-
-	err = s.serverRepo.Create(ctx, server)
+	err := s.serverRepo.Create(ctx, server)
 
 	if err != nil {
 		return nil, err

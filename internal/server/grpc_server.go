@@ -112,7 +112,7 @@ func (s *Server) Login(ctx context.Context, req *pb.LoginRequest) (*pb.Authentic
 }
 
 func (s *Server) CreateServer(ctx context.Context, req *pb.CreateServerRequest) (*pb.CreateServerResponse, error) {
-	server, err := s.serverService.CreateServer(ctx, req.Name, req.Endpoint, req.Region, req.MaxClients)
+	server, err := s.serverService.CreateServer(ctx, req.Name, req.Endpoint, req.Region, req.PublicKey, req.MaxClients)
 
 	if err != nil {
 		return nil, errors.New("error creating server")

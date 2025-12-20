@@ -13,7 +13,7 @@ import (
 )
 
 func AuthInterceptor(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
-	if isPublicEndpoint(info.FullMethod) {
+	if IsPublicEndpoint(info.FullMethod) {
 		return handler(ctx, req)
 	}
 
@@ -23,19 +23,28 @@ func AuthInterceptor(ctx context.Context, req any, info *grpc.UnaryServerInfo, h
 		return nil, status.Errorf(codes.Unauthenticated, "authentication required: %v", err)
 	}
 
-	claims, err := auth.ValidateToken(token)
+	ctx, err = ValidateAndSetUserContext(ctx, token)
+
 	if err != nil {
-		return nil, status.Errorf(codes.Unauthenticated, "invalid token: %v", err)
+		return nil, status.Errorf(codes.Unauthenticated, "invalid token")
 	}
-
-	ctx = context.WithValue(ctx, auth.UserIdKey, claims.UserId)
-	ctx = context.WithValue(ctx, auth.UserEmailKey, claims.Email)
-
 	return handler(ctx, req)
 
 }
 
-func isPublicEndpoint(method string) bool {
+func ValidateAndSetUserContext(ctx context.Context, token string) (context.Context, error) {
+	claims, err := auth.ValidateToken(token)
+
+	if err != nil {
+		return ctx, err
+	}
+
+	ctx = context.WithValue(ctx, auth.UserIdKey, claims.UserId)
+	ctx = context.WithValue(ctx, auth.UserEmailKey, claims.Email)
+	return ctx, nil
+}
+
+func IsPublicEndpoint(method string) bool {
 	publicEndpoints := []string{
 		"/vpn.UserService/Register",
 		"/vpn.UserService/Login",
@@ -69,6 +78,20 @@ func extractTokenFromMetadata(ctx context.Context) (string, error) {
 
 	if len(parts) != 2 || parts[0] != "Bearer" {
 		return "", errors.New("invalid authorization header fromat")
+	}
+
+	return parts[1], nil
+}
+
+func ExtractTokenFromHeader(authHeader string) (string, error) {
+	if authHeader == "" {
+		return "", errors.New("authorization header missing")
+	}
+
+	parts := strings.Split(authHeader, " ")
+
+	if len(parts) != 2 || parts[0] != "Bearer" {
+		return "", errors.New("invalid authorization header format")
 	}
 
 	return parts[1], nil

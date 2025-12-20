@@ -40,6 +40,14 @@ func main() {
 		log.Printf("Warning: Failed to initialize indexes: %v", err)
 	}
 
+	mainServer := server.NewServer()
+
+	go startGrpcServer(mainServer)
+	server.StartConnectServer(mainServer)
+
+}
+
+func startGrpcServer(mainServer *server.Server) {
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = ":50051"
@@ -53,7 +61,6 @@ func main() {
 		grpc.UnaryInterceptor(server.AuthInterceptor),
 	)
 
-	mainServer := server.NewServer()
 	pb.RegisterUserServiceServer(grpcServer, mainServer)
 	pb.RegisterServerServiceServer(grpcServer, mainServer)
 	pb.RegisterConfigServiceServer(grpcServer, mainServer)

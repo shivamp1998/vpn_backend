@@ -1,7 +1,6 @@
 syntax="proto3";
 package vpn;
-
-option go_package="proto/gen";
+option go_package="github.com/shivamp1998/vpn_backend/proto/gen";
 
 
 service UserService {
@@ -48,6 +47,7 @@ message CreateServerRequest {
     string endpoint = 2;
     string region = 3;
     int32 max_clients = 4;
+    string public_key = 5;
 }
 
 message CreateServerResponse {
