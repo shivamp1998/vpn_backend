@@ -93,8 +93,10 @@ message ConfigData {
     string public_key = 2;
     string server_public_key = 3;
     string server_endpoint = 4;
-    string client_ip = 5;
-    string dns = 6;
+    string server_address = 5;
+    string server_port = 6;
+    string client_ip = 7;
+    string dns = 8;
 }
 
 message GetConfigRequest {

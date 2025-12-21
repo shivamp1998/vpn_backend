@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/shivamp1998/vpn_backend/internal/model"
 	"github.com/shivamp1998/vpn_backend/internal/repository"
@@ -38,6 +39,8 @@ type ConfigData struct {
 	PublicKey       string
 	ServerPublicKey string
 	ServerEndpoint  string
+	ServerAddress   string
+	ServerPort      string
 	ClientIp        string
 	DNS             string
 }
@@ -100,6 +103,8 @@ func (s *ConfigService) GenerateConfig(ctx context.Context, userId primitive.Obj
 			PublicKey:       keys.PublicKey,
 			ServerPublicKey: server.PublicKey,
 			ServerEndpoint:  server.Endpoint,
+			ServerAddress:   strings.Split(server.Endpoint, ":")[0],
+			ServerPort:      strings.Split(server.Endpoint, ":")[1],
 			ClientIp:        keys.IpAddress,
 			DNS:             "8.8.8.8",
 		},

@@ -31,7 +31,6 @@ func NewServer() *Server {
 
 func (s *Server) GenerateConfig(ctx context.Context, req *pb.GenerateConfigRequest) (*pb.GenerateConfigResponse, error) {
 	userId, err := auth.GetUserIDFromContext(ctx)
-	log.Print(userId)
 	if err != nil {
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
@@ -43,7 +42,6 @@ func (s *Server) GenerateConfig(ctx context.Context, req *pb.GenerateConfigReque
 			Message: "error",
 		}, err
 	}
-
 	return &pb.GenerateConfigResponse{
 		ConfigContent: result.ConfigContent,
 		QrCodeBase64:  result.QRCodeBase64,
@@ -52,6 +50,8 @@ func (s *Server) GenerateConfig(ctx context.Context, req *pb.GenerateConfigReque
 			PublicKey:       result.ConfigData.PublicKey,
 			ServerPublicKey: result.ConfigData.ServerPublicKey,
 			ServerEndpoint:  result.ConfigData.ServerEndpoint,
+			ServerAddress:   result.ConfigData.ServerAddress,
+			ServerPort:      result.ConfigData.ServerPort,
 			ClientIp:        result.ConfigData.ClientIp,
 			Dns:             result.ConfigData.DNS,
 		},

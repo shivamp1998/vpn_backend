@@ -683,8 +683,10 @@ type ConfigData struct {
 	PublicKey       string                 `protobuf:"bytes,2,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"`
 	ServerPublicKey string                 `protobuf:"bytes,3,opt,name=server_public_key,json=serverPublicKey,proto3" json:"server_public_key,omitempty"`
 	ServerEndpoint  string                 `protobuf:"bytes,4,opt,name=server_endpoint,json=serverEndpoint,proto3" json:"server_endpoint,omitempty"`
-	ClientIp        string                 `protobuf:"bytes,5,opt,name=client_ip,json=clientIp,proto3" json:"client_ip,omitempty"`
-	Dns             string                 `protobuf:"bytes,6,opt,name=dns,proto3" json:"dns,omitempty"`
+	ServerAddress   string                 `protobuf:"bytes,5,opt,name=server_address,json=serverAddress,proto3" json:"server_address,omitempty"`
+	ServerPort      string                 `protobuf:"bytes,6,opt,name=server_port,json=serverPort,proto3" json:"server_port,omitempty"`
+	ClientIp        string                 `protobuf:"bytes,7,opt,name=client_ip,json=clientIp,proto3" json:"client_ip,omitempty"`
+	Dns             string                 `protobuf:"bytes,8,opt,name=dns,proto3" json:"dns,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -743,6 +745,20 @@ func (x *ConfigData) GetServerPublicKey() string {
 func (x *ConfigData) GetServerEndpoint() string {
 	if x != nil {
 		return x.ServerEndpoint
+	}
+	return ""
+}
+
+func (x *ConfigData) GetServerAddress() string {
+	if x != nil {
+		return x.ServerAddress
+	}
+	return ""
+}
+
+func (x *ConfigData) GetServerPort() string {
+	if x != nil {
+		return x.ServerPort
 	}
 	return ""
 }
@@ -922,7 +938,7 @@ const file_vpn_proto_rawDesc = "" +
 	"\x0eqr_code_base64\x18\x02 \x01(\tR\fqrCodeBase64\x120\n" +
 	"\vconfig_data\x18\x03 \x01(\v2\x0f.vpn.ConfigDataR\n" +
 	"configData\x12\x18\n" +
-	"\amessage\x18\x04 \x01(\tR\amessage\"\xd0\x01\n" +
+	"\amessage\x18\x04 \x01(\tR\amessage\"\x98\x02\n" +
 	"\n" +
 	"ConfigData\x12\x1f\n" +
 	"\vprivate_key\x18\x01 \x01(\tR\n" +
@@ -930,9 +946,12 @@ const file_vpn_proto_rawDesc = "" +
 	"\n" +
 	"public_key\x18\x02 \x01(\tR\tpublicKey\x12*\n" +
 	"\x11server_public_key\x18\x03 \x01(\tR\x0fserverPublicKey\x12'\n" +
-	"\x0fserver_endpoint\x18\x04 \x01(\tR\x0eserverEndpoint\x12\x1b\n" +
-	"\tclient_ip\x18\x05 \x01(\tR\bclientIp\x12\x10\n" +
-	"\x03dns\x18\x06 \x01(\tR\x03dns\"H\n" +
+	"\x0fserver_endpoint\x18\x04 \x01(\tR\x0eserverEndpoint\x12%\n" +
+	"\x0eserver_address\x18\x05 \x01(\tR\rserverAddress\x12\x1f\n" +
+	"\vserver_port\x18\x06 \x01(\tR\n" +
+	"serverPort\x12\x1b\n" +
+	"\tclient_ip\x18\a \x01(\tR\bclientIp\x12\x10\n" +
+	"\x03dns\x18\b \x01(\tR\x03dns\"H\n" +
 	"\x10GetConfigRequest\x12\x1b\n" +
 	"\tserver_id\x18\x01 \x01(\tR\bserverId\x12\x17\n" +
 	"\auser_id\x18\x02 \x01(\tR\x06userId\"\x92\x01\n" +
